@@ -1,9 +1,13 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from fpdf import FPDF
+from io import BytesIO
+import base64
 from datetime import datetime, timedelta, date
 from dataframes import df_financeiro
-from funcoes import format_number, converter_data
+from funcoes import format_number, converter_data, generate_pdf
+
 
 st.set_page_config(page_title="Análise Financeira GSA", layout="wide")
 
@@ -118,18 +122,18 @@ with aba1:
     st.divider()
 
     st.subheader('Base de dados')
-    #colunas_exibir = ['Tipo', 'Quitado', 'Competência', 'Vencimento', 'Valor (R$)', 'Categoria', 'Cliente/Fornecedor']
-    #df_financeiro_exibicao = df_financeiro_filtrado[colunas_exibir]
-    st.dataframe(df_financeiro_filtrado)
+    colunas_exibir = ['Tipo', 'Quitado', 'Competência', 'Vencimento', 'Valor (R$)', 'Categoria', 'Cliente/Fornecedor']
+    df_financeiro_exibicao = df_financeiro_filtrado[colunas_exibir]
+    st.dataframe(df_financeiro_exibicao)
 
-
-    # Botão para download do XLSX
-    if st.button('Download Excel'):
-        excel_file = "dataframe.xlsx"
-        df_financeiro_filtrado.to_excel(excel_file, index=False)
-        with open(excel_file, "rb") as file:
-            file_contents = file.read()
-        st.download_button(label="Download", data=file_contents, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    # Botão para download do PDF
+    if st.button('Download PDF'):
+        pdf_filename = generate_pdf(df_financeiro_exibicao)
+        with open(pdf_filename, "rb") as file:
+            pdf = file.read()
+            b64 = base64.b64encode(pdf).decode()
+            href = f'<a href="data:application/octet-stream;base64,{b64}" download="dataframe.pdf">Download PDF</a>'
+            st.markdown(href, unsafe_allow_html=True)
 
     st.divider()
     st.subheader('Estatísticas Gerais')
