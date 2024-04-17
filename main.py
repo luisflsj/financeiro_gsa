@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from datetime import datetime
+from datetime import datetime, timedelta, date
 from dataframes import df_financeiro
 from funcoes import format_number, converter_data, generate_pdf
 from fpdf import FPDF
@@ -16,11 +16,26 @@ st.markdown("---")
 st.sidebar.image('logo_gsa.png', width=300)
 
 with st.sidebar:
-    data_min = converter_data(df_financeiro['Vencimento'].min())
-    data_max = converter_data(df_financeiro['Vencimento'].max())
+    # Defina a data de hoje
+    hoje = date.today()
 
-    data_inicio_str, data_fim_str = st.date_input("Selecione um intervalo de datas", [data_min, data_max])
+    # Primeiro dia do mês atual
+    primeiro_dia_mes_atual = hoje.replace(day=1)
 
+    # Último dia do mês anterior
+    ultimo_dia_mes_anterior = primeiro_dia_mes_atual - timedelta(days=1)
+
+    # Primeiro dia do mês anterior
+    primeiro_dia_mes_anterior = ultimo_dia_mes_anterior.replace(day=1)
+
+    # Crie os campos de entrada de data com os valores padrão para o mês anterior
+    data_inicio_default = primeiro_dia_mes_anterior
+    data_fim_default = ultimo_dia_mes_anterior
+
+    # Crie os campos de entrada de data
+    data_inicio_str, data_fim_str = st.date_input("Selecione um intervalo de datas", [data_inicio_default, data_fim_default])
+
+    # Converta as datas para o formato de objeto de data
     data_inicio = converter_data(data_inicio_str)
     data_fim = converter_data(data_fim_str)
 
@@ -43,9 +58,9 @@ with st.sidebar:
 
     if data_inicio and data_fim:
         df_financeiro_filtrado = df_financeiro_filtrado[
-        (df_financeiro_filtrado['Vencimento'] >= pd.Timestamp(data_inicio)) &
-        (df_financeiro_filtrado['Vencimento'] <= pd.Timestamp(data_fim))
-    ]
+            (df_financeiro_filtrado['Vencimento'] >= pd.Timestamp(data_inicio)) &
+            (df_financeiro_filtrado['Vencimento'] <= pd.Timestamp(data_fim))
+        ]
 
     if filtro_receita_despesa:
         df_financeiro_filtrado = df_financeiro_filtrado[df_financeiro_filtrado['Tipo'].isin(filtro_receita_despesa)]
