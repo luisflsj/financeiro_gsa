@@ -113,7 +113,7 @@ with aba1:
     diff_valor = df_receitas['Valor (R$)'].sum() - df_despesas['Valor (R$)'].sum()
 
     with coluna3:
-        st.subheader('Diferença')
+        st.subheader('Resultado')
         st.metric('Valor (R$)', format_number(diff_valor, "R$"))
 
     st.divider()
@@ -154,6 +154,22 @@ with aba2:
     # === GRÁFICOS DE RECEITAS === #
 
     st.subheader('Distribuição de Valores por Clientes')
+
+    # === CATEGORIA === #
+
+    df_categoria_receita = df_receitas.groupby('Categoria')['Valor (R$)'].sum().reset_index()
+    df_categoria_receita = df_categoria_receita.sort_values(by = 'Valor (R$)', ascending=False)
+    df_categoria_receita['Valor'] = df_categoria_receita['Valor (R$)'].apply(format_number)
+
+    graf_categoria_receita = px.bar(
+        df_categoria_receita.head(10),
+        x = 'Categoria',
+        y = 'Valor (R$)',
+        color_discrete_sequence=[px.colors.qualitative.Vivid[5]],
+        text = 'Valor',
+        title='Distribuição de Valores por Categoria'
+    )
+    st.plotly_chart(graf_categoria_receita, use_container_width=True)
 
     # === VALOR === #
     df_receitas_clientes = df_receitas.groupby('Cliente/Fornecedor')['Valor (R$)'].sum().reset_index()
@@ -203,20 +219,6 @@ with aba2:
         )
         st.plotly_chart(graf_quitacao_total_receita, use_container_width=True)
 
-    df_categoria_receita = df_receitas.groupby('Categoria')['Valor (R$)'].sum().reset_index()
-    df_categoria_receita = df_categoria_receita.sort_values(by = 'Valor (R$)', ascending=False)
-    df_categoria_receita['Valor'] = df_categoria_receita['Valor (R$)'].apply(format_number)
-
-    graf_categoria_receita = px.bar(
-        df_categoria_receita.head(10),
-        x = 'Categoria',
-        y = 'Valor (R$)',
-        color_discrete_sequence=[px.colors.qualitative.Vivid[5]],
-        text = 'Valor',
-        title='Distribuição de Valores por Categoria'
-    )
-    st.plotly_chart(graf_categoria_receita, use_container_width=True)
-
 with aba3:
     fornecedores = len(df_despesas['Cliente/Fornecedor'].unique())
 
@@ -225,6 +227,22 @@ with aba3:
     # === GRÁFICOS DE DESPESAS === #
 
     st.subheader('Distribuição de Valores por Fornecedores')
+
+    # === CATEGORIA === #
+
+    df_categoria_despesa = df_despesas.groupby('Categoria')['Valor (R$)'].sum().reset_index()
+    df_categoria_despesa = df_categoria_despesa.sort_values(by = 'Valor (R$)', ascending=False)
+    df_categoria_despesa['Valor'] = df_categoria_despesa['Valor (R$)'].apply(format_number)
+
+    graf_categoria_despesa = px.bar(
+        df_categoria_despesa.head(10),
+        x = 'Categoria',
+        y = 'Valor (R$)',
+        color_discrete_sequence=[px.colors.qualitative.Vivid[5]],
+        text = 'Valor',
+        title='Distribuição de Valores por Categoria'
+    )
+    st.plotly_chart(graf_categoria_despesa, use_container_width=True)
 
     # === VALOR === #
     df_despesas_clientes = df_despesas.groupby('Cliente/Fornecedor')['Valor (R$)'].sum().reset_index()
@@ -273,20 +291,6 @@ with aba3:
             title='Distribuição de Valores de despesas Quitadas Totalmente'
         )
         st.plotly_chart(graf_quitacao_total_despesa, use_container_width=True)
-
-    df_categoria_despesa = df_despesas.groupby('Categoria')['Valor (R$)'].sum().reset_index()
-    df_categoria_despesa = df_categoria_despesa.sort_values(by = 'Valor (R$)', ascending=False)
-    df_categoria_despesa['Valor'] = df_categoria_despesa['Valor (R$)'].apply(format_number)
-
-    graf_categoria_despesa = px.bar(
-        df_categoria_despesa.head(10),
-        x = 'Categoria',
-        y = 'Valor (R$)',
-        color_discrete_sequence=[px.colors.qualitative.Vivid[5]],
-        text = 'Valor',
-        title='Distribuição de Valores por Categoria'
-    )
-    st.plotly_chart(graf_categoria_despesa, use_container_width=True)
 
 with aba4:
     df_retirada = df_despesas[df_despesas['Categoria'].str.contains('RETIRADA')]
