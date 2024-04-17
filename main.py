@@ -3,8 +3,7 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime, timedelta, date
 from dataframes import df_financeiro
-from funcoes import format_number, converter_data, generate_pdf
-from fpdf import FPDF
+from funcoes import format_number, converter_data
 
 st.set_page_config(page_title="Análise Financeira GSA", layout="wide")
 
@@ -119,17 +118,16 @@ with aba1:
     st.divider()
 
     st.subheader('Base de dados')
-    colunas_exibir = ['Tipo', 'Quitado', 'Competência', 'Vencimento', 'Valor (R$)', 'Categoria', 'Cliente/Fornecedor']
-    df_financeiro_exibicao = df_financeiro_filtrado[colunas_exibir]
-    st.dataframe(df_financeiro_exibicao)
+    #colunas_exibir = ['Tipo', 'Quitado', 'Competência', 'Vencimento', 'Valor (R$)', 'Categoria', 'Cliente/Fornecedor']
+    #df_financeiro_exibicao = df_financeiro_filtrado[colunas_exibir]
+    st.dataframe(df_financeiro_filtrado)
 
 
-    # Botão para download do PDF
-    if st.button('Download PDF'):
-        pdf = generate_pdf(df_financeiro_exibicao)
-        pdf_file = "dataframe.pdf"
-        pdf.output(pdf_file)
-        st.download_button(label="Download", data=pdf_file, file_name=pdf_file)
+    # Botão para download do XLSX
+    if st.button('Download Excel'):
+        excel_file = "dataframe.xlsx"
+        df_financeiro_filtrado.to_excel(excel_file, index=False)
+        st.download_button(label="Download", data=excel_file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
     st.divider()
     st.subheader('Estatísticas Gerais')
