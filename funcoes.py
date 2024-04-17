@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from fpdf import FPDF
 from datetime import datetime
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 # ======================= FORMATAÇÃO FINANCEIRA ======================= #
 
 def format_number(value, prefix=''):
@@ -29,28 +31,3 @@ def converter_data(data_str):
         return datetime.strptime(data_str, '%d/%m/%Y').date()
     else:
         return data_str
-    
-# ======================= DOWNLOAD DE DATAS ======================= #
-
-def generate_pdf(df):
-    pdf = FPDF(orientation='L')  # Define a orientação como paisagem
-    pdf.add_page()
-    pdf.set_font("Arial", size=8)
-
-    # Cabeçalho da tabela
-    pdf.set_fill_color(255, 255, 255)
-    col_widths = [25, 15, 20, 35, 20, 90, 80]
-    row_height = 8
-    for i, col in enumerate(df.columns):
-        pdf.cell(col_widths[i], row_height, txt=col, border=1, ln=0, align='C', fill=True)
-
-    pdf.ln(row_height)
-
-    # Adiciona os dados ao PDF
-    for index, row in df.iterrows():
-        for i, col in enumerate(df.columns):
-            pdf.cell(col_widths[i], row_height, txt=str(row[col]), border=1)
-
-        pdf.ln(row_height)
-
-    return pdf
