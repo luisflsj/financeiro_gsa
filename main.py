@@ -127,7 +127,9 @@ with aba1:
     if st.button('Download Excel'):
         excel_file = "dataframe.xlsx"
         df_financeiro_filtrado.to_excel(excel_file, index=False)
-        st.download_button(label="Download", data=excel_file, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        with open(excel_file, "rb") as file:
+            file_contents = file.read()
+        st.download_button(label="Download", data=file_contents, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
     st.divider()
     st.subheader('Estatísticas Gerais')
